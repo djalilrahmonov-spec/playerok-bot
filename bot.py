@@ -147,26 +147,22 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif query.data == "back":
         await start(update, context)
 
-# ========== ГЛАВНЫЙ ЗАПУСК (правильный для Render) ==========
-if __name__ == "__main__":
-    try:
-        print("🤖 Бот запускается...")
-        # Создаем приложение
-        application = Application.builder().token(TELEGRAM_TOKEN).build()
-        
-        # Добавляем обработчики
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(CallbackQueryHandler(button_handler))
-        
-        print("🤖 Бот запущен! Напиши /start в Telegram")
-        
-        # Запускаем бота в бесконечном режиме (блокирующий вызов)
-        application.run_polling(allowed_updates=Update.ALL_TYPES)
-        
-    except Exception as e:
-        print(f"Критическая ошибка: {e}")
-        sys.exit(1)
-    await app.run_polling()
+# ========== ЗАПУСК ==========
+def main():
+    """Главная функция запуска бота"""
+    print("🤖 Бот запускается...")
+    
+    # Создаем приложение
+    app = Application.builder().token(TELEGRAM_TOKEN).build()
+    
+    # Добавляем обработчики
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button_handler))
+    
+    print("🤖 Бот запущен! Напиши /start в Telegram")
+    
+    # Запускаем бота (этот метод сам создает цикл событий)
+    app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
