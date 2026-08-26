@@ -16,10 +16,9 @@ ADMIN_ID = int(os.getenv("ADMIN_ID"))
 AUTO_CONFIRM = True
 AUTO_REPLY = True
 AUTO_RISE = True
-RISE_INTERVAL = 3600  # 1 час
+RISE_INTERVAL = 3600
 REPLY_TEXT = "✅ Ваш товар отправлен! Спасибо за покупку! 🙌"
 
-# Статистика (в памяти)
 stats = {"today": 0, "total": 0, "revenue": 0, "last_sale": None}
 products_cache = []
 # =========================================================
@@ -67,7 +66,6 @@ async def send_telegram(text):
     except:
         pass
 
-# ========== АВТОМАТИЗАЦИЯ ==========
 async def auto_confirm_and_deliver():
     global stats
     orders = await get_orders()
@@ -76,7 +74,6 @@ async def auto_confirm_and_deliver():
     
     for order in orders:
         order_id = order.get("id")
-        # Здесь замени на свои ключи или подключи базу данных
         keys = ["KEY1-XXXX-YYYY", "KEY2-ZZZZ-WWWW"]
         
         if await deliver_product(order_id, keys):
@@ -224,6 +221,8 @@ async def main():
     
     asyncio.create_task(bg_loop())
     print("🤖 Бот запущен! Напиши /start в Telegram")
+    
+    # Запуск через новый метод
     await app.initialize()
     await app.start()
     await app.updater.start_polling()
