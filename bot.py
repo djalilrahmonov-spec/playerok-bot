@@ -1,11 +1,11 @@
 import asyncio
 import time
 import os
+import sys
 from datetime import datetime
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 import aiohttp
-import sys
 
 # ========== НАСТРОЙКИ ==========
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -147,13 +147,25 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif query.data == "back":
         await start(update, context)
 
-# ========== ЗАПУСК ==========
-async def main():
-    app = Application.builder().token(TELEGRAM_TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(button_handler))
-    
-    print("🤖 Бот запущен! Напиши /start в Telegram")
+# ========== ГЛАВНЫЙ ЗАПУСК (правильный для Render) ==========
+if __name__ == "__main__":
+    try:
+        print("🤖 Бот запускается...")
+        # Создаем приложение
+        application = Application.builder().token(TELEGRAM_TOKEN).build()
+        
+        # Добавляем обработчики
+        application.add_handler(CommandHandler("start", start))
+        application.add_handler(CallbackQueryHandler(button_handler))
+        
+        print("🤖 Бот запущен! Напиши /start в Telegram")
+        
+        # Запускаем бота в бесконечном режиме (блокирующий вызов)
+        application.run_polling(allowed_updates=Update.ALL_TYPES)
+        
+    except Exception as e:
+        print(f"Критическая ошибка: {e}")
+        sys.exit(1)
     await app.run_polling()
 
 if __name__ == "__main__":
